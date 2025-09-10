@@ -6,6 +6,8 @@ game::game(){
   aliens = createAliens();
   aliensDirection = 1;
   timeLastShootAlien = 0.0;
+  lastSpawnTime = 0.0;
+  mys_shipSpawnInterval = GetRandomValue(10, 20);
 }
 
 game::~game(){
@@ -30,9 +32,16 @@ void game::draw(){
   for (auto& laser: alienLasers){
     laser.draw();
   }
+  mys_Ship.Draw();
 }
 
 void game::update(){
+  double getCurrentTime = GetTime();
+  if(getCurrentTime - lastSpawnTime > mys_shipSpawnInterval){
+    mys_Ship.Spawn();
+    getCurrentTime = GetTime();
+    mys_shipSpawnInterval = GetRandomValue(10, 20);
+  }
   for(auto& Laser: spaceship.lasers){
     Laser.update();
   }
@@ -41,6 +50,7 @@ void game::update(){
   }
   deleteInacticeLasers();
   moveSideAliens();
+  mys_Ship.Update();
 }
 
 void game::inputHandle(){
@@ -79,7 +89,7 @@ std::vector<Obstacle> game::createObstacle()
 
   for (int i = 0; i < 4; i++){
     float offsetX = (i + 1)* gap + i *obstacleWidth;
-    obstacles.push_back(Obstacle({offsetX, float(GetScreenHeight() - 100)}));
+    obstacles.push_back(Obstacle({offsetX, float(GetScreenHeight() - 200)}));
   }
   return obstacles ;
 }
@@ -103,6 +113,7 @@ std::vector<Alien> game::createAliens()
       aliens.push_back(Alien(alienType,{x,y}));
     }
   }
+  return aliens;
 }
 
 void game::moveSideAliens()

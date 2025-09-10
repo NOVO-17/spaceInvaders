@@ -6,7 +6,6 @@ class Alien
 private:
 public:
   Alien(int type, Vector2 position);
-  ~Alien();
   void Update(int direction);
   void Draw();
   int GetType();

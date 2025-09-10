@@ -2,10 +2,12 @@
 #include "spaceship.hpp"
 #include "obstacle.hpp"
 #include "alien.hpp"
+#include "mys_ship.hpp"
 
 class game{
 private:
   Spaceship spaceship;
+  mys_ship mys_Ship;
   std::vector<Obstacle> createObstacle();
   std::vector<Alien> createAliens();
   void deleteInacticeLasers();
@@ -18,7 +20,8 @@ private:
   int aliensDirection;
   constexpr static float alienShootInterval = 0.35;
   float timeLastShootAlien;
-
+  float mys_shipSpawnInterval;
+  float lastSpawnTime;
 public:
   game();
   ~game();
