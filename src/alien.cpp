@@ -2,7 +2,6 @@
 
 
 Texture2D Alien::alienImages[3] = {};
-
 Alien::Alien(int type, Vector2 position)
 {
   this -> position = position;
