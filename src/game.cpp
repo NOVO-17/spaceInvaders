@@ -4,6 +4,7 @@
 game::game(){
   obstacles = createObstacle();
   aliens = createAliens();
+  // mys_Ship.spawn();
   aliensDirection = 1;
   timeLastShootAlien = 0.0;
   lastSpawnTime = 0.0;
@@ -16,6 +17,7 @@ game::~game(){
 
 void game::draw(){
   spaceship.Draw();
+  mys_Ship.Draw();
 
   for(auto& Laser: spaceship.lasers){
     Laser.draw();
@@ -32,25 +34,29 @@ void game::draw(){
   for (auto& laser: alienLasers){
     laser.draw();
   }
-  mys_Ship.Draw();
 }
 
 void game::update(){
-  double getCurrentTime = GetTime();
-  if(getCurrentTime - lastSpawnTime > mys_shipSpawnInterval){
-    mys_Ship.Spawn();
-    getCurrentTime = GetTime();
-    mys_shipSpawnInterval = GetRandomValue(10, 20);
+
+  deleteInacticeLasers();
+  moveSideAliens();
+  mys_Ship.Update();
+  CheckForCollision();
+
+  double GetCurrentTime = GetTime();
+  if(GetCurrentTime - lastSpawnTime > mys_shipSpawnInterval){
+    mys_Ship.spawn();
+    lastSpawnTime = GetTime();
+    mys_shipSpawnInterval = GetRandomValue(10,20);
   }
   for(auto& Laser: spaceship.lasers){
     Laser.update();
   }
+
   for (auto& laser: alienLasers){
     laser.update();
   }
-  deleteInacticeLasers();
-  moveSideAliens();
-  mys_Ship.Update();
+
 }
 
 void game::inputHandle(){
@@ -147,5 +153,21 @@ void game::alienShootLaser()
     alienLasers.push_back(Laser({alien.position.x + alien.alienImages[alien.type - 1].width/2,
                                 alien.position.y + alien.alienImages[alien.type - 1].height},6));
     timeLastShootAlien = GetTime();
+  }
+}
+
+void game::CheckForCollision()
+{
+  for(auto& laser: spaceship.lasers){
+    auto it = aliens.begin();
+    while (it != aliens.end()){
+      if(CheckCollisionRecs(it -> getRect(), laser.getRect())){
+        it = aliens.erase(it);
+        laser.active = false;
+      }else{
+        ++it;
+      }
+    }
+    
   }
 }

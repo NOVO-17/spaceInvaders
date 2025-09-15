@@ -7,6 +7,7 @@ class Laser{
     void update();
     void draw();
     bool active;
+    Rectangle getRect();
 
   private:
     Vector2 position;

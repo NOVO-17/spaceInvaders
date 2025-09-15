@@ -9,8 +9,9 @@ public:
   void Update(int direction);
   void Draw();
   int GetType();
+  int type;
   static void unloadImages();
   static Texture2D alienImages[3];
-  int type;
   Vector2 position;
+  Rectangle getRect();
 };

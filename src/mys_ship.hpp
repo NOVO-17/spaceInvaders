@@ -1,16 +1,17 @@
-#pragma once 
+#pragma once
 #include <raylib.h>
 
 class mys_ship{
   public:
-  mys_ship();
-  ~mys_ship();
-  void Update();
-  void Draw();
-  void Spawn();
-  bool alive;
-private:
-  Vector2 position;
-  int speed;
-  Texture2D image;
+    mys_ship();
+    ~mys_ship();
+    void Draw();
+    void Update();
+    void spawn();
+    bool alive;
+    Rectangle getRect();
+  private:
+    int speed;
+    Vector2 position;
+    Texture2D image;
 };
