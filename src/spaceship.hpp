@@ -11,6 +11,7 @@ class Spaceship{
     void moveLeft();
     void moveRight();
     void shoot();
+    void Reset();
     Rectangle getRect();
     std::vector<Laser> lasers;
 

@@ -1,14 +1,8 @@
 #include "game.hpp"
-
+#include <iostream>
 
 game::game(){
-  obstacles = createObstacle();
-  aliens = createAliens();
-  // mys_Ship.spawn();
-  aliensDirection = 1;
-  timeLastShootAlien = 0.0;
-  lastSpawnTime = 0.0;
-  mys_shipSpawnInterval = GetRandomValue(10, 20);
+  InitGame();
 }
 
 game::~game(){
@@ -37,37 +31,43 @@ void game::draw(){
 }
 
 void game::update(){
+  if (run){
+    deleteInacticeLasers();
+    moveSideAliens();
+    alienShootLaser();
+    mys_Ship.Update();
+    CheckForCollision();
 
-  deleteInacticeLasers();
-  moveSideAliens();
-  mys_Ship.Update();
-  CheckForCollision();
-
-  double GetCurrentTime = GetTime();
-  if(GetCurrentTime - lastSpawnTime > mys_shipSpawnInterval){
-    mys_Ship.spawn();
-    lastSpawnTime = GetTime();
-    mys_shipSpawnInterval = GetRandomValue(10,20);
+    double GetCurrentTime = GetTime();
+    if(GetCurrentTime - lastSpawnTime > mys_shipSpawnInterval){
+      mys_Ship.spawn();
+      lastSpawnTime = GetTime();
+      mys_shipSpawnInterval = GetRandomValue(10,20);
+    }
+    for(auto& Laser: spaceship.lasers){
+      Laser.update();
+    }
+    for (auto& laser: alienLasers){
+      laser.update();
+    }
+  }else{
+    if(IsKeyDown(KEY_ENTER)){
+      Reset();
+    }
+    
   }
-  for(auto& Laser: spaceship.lasers){
-    Laser.update();
-  }
-
-  for (auto& laser: alienLasers){
-    laser.update();
-  }
-
 }
 
 void game::inputHandle(){
-  if (IsKeyDown(KEY_LEFT)){
-    spaceship.moveLeft();
-  } else if (IsKeyDown(KEY_RIGHT)){
-    spaceship.moveRight();
-  } else if (IsKeyDown(KEY_SPACE)){
-    spaceship.shoot();
+  if(run){
+    if (IsKeyDown(KEY_LEFT)){
+      spaceship.moveLeft();
+    } else if (IsKeyDown(KEY_RIGHT)){
+      spaceship.moveRight();
+    } else if (IsKeyDown(KEY_SPACE)){
+      spaceship.shoot();
+    }
   }
-  
 }
 
 void game::deleteInacticeLasers(){
@@ -158,7 +158,9 @@ void game::alienShootLaser()
 
 void game::CheckForCollision()
 {
+  // spaceship laser 
   for(auto& laser: spaceship.lasers){
+    // collision check with aliens
     auto it = aliens.begin();
     while (it != aliens.end()){
       if(CheckCollisionRecs(it -> getRect(), laser.getRect())){
@@ -168,6 +170,94 @@ void game::CheckForCollision()
         ++it;
       }
     }
-    
+
+    // collision sheck with blocks
+    for(auto& obs: obstacles){
+      auto it = obs.blocks.begin();
+      while (it != obs.blocks.end()){
+        if(CheckCollisionRecs(it -> getRect(), laser.getRect())){
+          it = obs.blocks.erase(it);
+          laser.active = false;
+        }else{
+          ++it;
+        }
+      }
+    }
+
+    // collision check with mystery ship
+    if(CheckCollisionRecs(mys_Ship.getRect(), laser.getRect())){
+      mys_Ship.alive = false;
+      laser.active = false;
+    }
   }
+
+  //alien lasers
+  for(auto& laser: alienLasers){
+    // collision check with spaceship
+    if(CheckCollisionRecs(laser.getRect(), spaceship.getRect())){
+        lives--;
+        if(lives == 0){ GameOver();}
+        else{ std::cout<< "lives: "<< lives << std::endl;}
+        laser.active = false;
+      }
+
+    // collision check with block
+    for(auto& obs: obstacles){
+      auto it = obs.blocks.begin();
+      while (it != obs.blocks.end()){
+        if(CheckCollisionRecs(it -> getRect(), laser.getRect())){
+          it = obs.blocks.erase(it);
+          laser.active = false;
+        }else{
+          ++it;
+        }
+      }
+    }
+  }
+
+  // alien collsion
+  for(auto& alien: aliens){
+    for(auto& obs:obstacles){
+      auto it = obs.blocks.begin();
+      while(it != obs.blocks.end()){
+        if(CheckCollisionRecs(it -> getRect(), alien.getRect())){
+          it = obs.blocks.erase(it);
+        }else{
+          it++;
+        }
+      }
+    }
+    if(CheckCollisionRecs(alien.getRect(),spaceship.getRect())){
+      GameOver();
+    }
+  }
+}
+
+void game::GameOver()
+{
+  std::cout<< "game over"<<std::endl;
+  run = false;
+
+}
+
+void game::Reset()
+{
+  spaceship.Reset();
+  aliens.clear();
+  alienLasers.clear();
+  obstacles.clear();
+  InitGame();
+
+}
+
+void game::InitGame()
+{
+  obstacles = createObstacle();
+  aliens = createAliens();
+  lives = 3;
+  run = true;
+  aliensDirection = 1;
+  timeLastShootAlien = 0.0;
+  lastSpawnTime = 0.0;
+  mys_shipSpawnInterval = GetRandomValue(10, 20);
 }

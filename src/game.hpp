@@ -15,18 +15,24 @@ private:
   void moveDownAliens(int distance);
   void alienShootLaser();
   void CheckForCollision();
+  void GameOver();
+  void Reset();
+  void InitGame();
   std::vector<Obstacle> obstacles;
   std::vector<Alien> aliens;
   std::vector<Laser> alienLasers;
   int aliensDirection;
+  int lives;
   constexpr static float alienShootInterval = 0.35;
   float timeLastShootAlien;
   float mys_shipSpawnInterval;
   float lastSpawnTime;
+
 public:
   game();
   ~game();
   void draw();
   void update();
   void inputHandle();
+  bool run;
 };

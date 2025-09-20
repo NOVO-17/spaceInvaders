@@ -1,6 +1,6 @@
 #include "laser.hpp"
 #include <iostream>
-
+#
 
 Laser::Laser(Vector2 position, int speed){
   this -> position = position;
