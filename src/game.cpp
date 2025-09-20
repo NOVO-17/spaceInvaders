@@ -125,11 +125,11 @@ std::vector<Alien> game::createAliens()
 void game::moveSideAliens()
 {
   for(auto& alien: aliens){
-    if(alien.position.x + alien.alienImages[alien.type - 1].width > GetScreenWidth()){
+    if(alien.position.x + alien.alienImages[alien.type - 1].width > GetScreenWidth() - 25){
       aliensDirection = -1;
       moveDownAliens(4);
     }
-    if(alien.position.x < 0 ){
+    if(alien.position.x < 25 ){
       aliensDirection = 1;
       moveDownAliens(4);
     }
@@ -164,6 +164,10 @@ void game::CheckForCollision()
     auto it = aliens.begin();
     while (it != aliens.end()){
       if(CheckCollisionRecs(it -> getRect(), laser.getRect())){
+        if(it -> type == 1){score += 100;}
+        else if (it -> type == 2){score += 200;}
+        else if (it -> type == 3){score += 300;}
+        CheckHighScore();
         it = aliens.erase(it);
         laser.active = false;
       }else{
@@ -188,6 +192,8 @@ void game::CheckForCollision()
     if(CheckCollisionRecs(mys_Ship.getRect(), laser.getRect())){
       mys_Ship.alive = false;
       laser.active = false;
+      score += 500;
+      CheckHighScore();
     }
   }
 
@@ -255,9 +261,18 @@ void game::InitGame()
   obstacles = createObstacle();
   aliens = createAliens();
   lives = 3;
+  score = 0;
+  HighScore = 0;
   run = true;
   aliensDirection = 1;
   timeLastShootAlien = 0.0;
   lastSpawnTime = 0.0;
   mys_shipSpawnInterval = GetRandomValue(10, 20);
+}
+
+void game::CheckHighScore()
+{
+  if(score > HighScore){
+    HighScore = score;
+  }
 }

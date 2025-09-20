@@ -18,11 +18,11 @@ private:
   void GameOver();
   void Reset();
   void InitGame();
+  void CheckHighScore();
   std::vector<Obstacle> obstacles;
   std::vector<Alien> aliens;
   std::vector<Laser> alienLasers;
   int aliensDirection;
-  int lives;
   constexpr static float alienShootInterval = 0.35;
   float timeLastShootAlien;
   float mys_shipSpawnInterval;
@@ -35,4 +35,7 @@ public:
   void update();
   void inputHandle();
   bool run;
+  int lives;
+  int score;
+  int HighScore;
 };

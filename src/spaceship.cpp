@@ -20,16 +20,16 @@ void Spaceship::Draw(){
 
 void Spaceship::moveLeft(){
   position.x -= 7;
-  if (position.x < 0){
-    position.x = 0;
+  if (position.x < 25){
+    position.x = 25;
   }
   
 }
 
 void Spaceship::moveRight(){
   position.x += 7;
-  if(position.x > GetScreenWidth() - image.width){
-    position.x = GetScreenWidth() - image.width;
+  if(position.x > GetScreenWidth() - image.width - 25){
+    position.x = GetScreenWidth() - image.width - 25;
   }
 }
 
@@ -43,7 +43,7 @@ void Spaceship::shoot(){
 void Spaceship::Reset()
 {
   position.x = (GetScreenWidth() - image.width)/2.0f;
-  position.y = GetScreenHeight() - image.height;
+  position.y = GetScreenHeight() - image.height - 100;
   lasers.clear();
   
 }
